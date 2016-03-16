@@ -1,0 +1,34 @@
+language: scala
+sudo: false
+matrix:
+  include:
+    # Spark 2.0.0-SNAPSHOT and Scala 2.11
+    - jdk: openjdk7
+      scala: 2.11.7
+      python: 2.7
+      env: TEST_SPARK_VERSION="2.0.0-SNAPSHOT"
+    # Spark 2.0.0-SNAPSHOT and Scala 2.10
+    - jdk: openjdk7
+      scala: 2.11.7
+      python: 2.6
+      env: TEST_SPARK_VERSION="2.0.0-SNAPSHOT"
+    - jdk: openjdk7
+      scala: 2.10.5
+      python: 2.7
+      env: TEST_SPARK_VERSION="2.0.0-SNAPSHOT"
+    - jdk: openjdk7
+      scala: 2.11.7
+      python: 3.4
+      env: TEST_SPARK_VERSION="2.0.0-SNAPSHOT"
+    - jdk: openjdk7
+      scala: 2.11.7
+      python: pypy
+      env: TEST_SPARK_VERSION="2.0.0-SNAPSHOT"
+install:
+  - pip install --user -q unittest2
+script:
+  - sbt -Dspark.testVersion=$TEST_SPARK_VERSION ++$TRAVIS_SCALA_VERSION update clean coverage test examples/test
+  - sbt ++$TRAVIS_SCALA_VERSION scalastyle examples/scalastyle
+  - ./python-tests/run-python-tests.sh
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

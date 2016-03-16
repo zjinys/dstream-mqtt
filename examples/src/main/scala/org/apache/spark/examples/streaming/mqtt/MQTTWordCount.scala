@@ -16,7 +16,7 @@
  */
 
 // scalastyle:off println
-package org.apache.spark.examples.streaming
+package org.apache.spark.examples.streaming.mqtt
 
 import org.eclipse.paho.client.mqttv3._
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
@@ -37,8 +37,6 @@ object MQTTPublisher {
       System.err.println("Usage: MQTTPublisher <MqttBrokerUrl> <topic>")
       System.exit(1)
     }
-
-    StreamingExamples.setStreamingLogLevels()
 
     val Seq(brokerUrl, topic) = args.toSeq
 
