@@ -27,8 +27,10 @@ matrix:
 install:
   - pip install --user -q unittest2
 script:
-  - sbt -Dspark.testVersion=$TEST_SPARK_VERSION ++$TRAVIS_SCALA_VERSION update clean coverage test examples/test
-  - sbt ++$TRAVIS_SCALA_VERSION scalastyle examples/scalastyle
+  - set -e
+  - sbt ++$TRAVIS_SCALA_VERSION update scalastyle examples/scalastyle
+  - sbt -Dspark.testVersion=$TEST_SPARK_VERSION ++$TRAVIS_SCALA_VERSION update clean coverage test
+  - sbt -Dspark.testVersion=$TEST_SPARK_VERSION ++$TRAVIS_SCALA_VERSION examples/test
   - ./python-tests/run-python-tests.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)

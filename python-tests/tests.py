@@ -39,7 +39,7 @@ else:
 from pyspark.context import SparkConf, SparkContext, RDD
 from pyspark.storagelevel import StorageLevel
 from pyspark.streaming.context import StreamingContext
-from pyspark_mqtt import MQTTUtils
+from dstream_mqtt import MQTTUtils
 
 
 class PySparkStreamingTestCase(unittest.TestCase):

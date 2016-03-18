@@ -70,6 +70,8 @@ assemblyMergeStrategy in (Test, assembly) <<= (assemblyMergeStrategy in assembly
   }
 }
 
+test in assembly := {}
+
 jarName in (Test, assembly) := s"${name.value}-assembly-test-${version.value}.jar"
 
 // Remove this once Spark 2.0.0 is out

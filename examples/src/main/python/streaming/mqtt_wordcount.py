@@ -35,7 +35,7 @@ import sys
 
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
-from pyspark_mqtt import MQTTUtils
+from dstream_mqtt import MQTTUtils
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
