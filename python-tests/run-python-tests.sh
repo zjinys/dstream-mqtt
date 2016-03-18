@@ -23,7 +23,7 @@ else
     SBT=build/sbt
 fi
 
-sbt -Dspark.testVersion=$TEST_SPARK_VERSION ++${TRAVIS_SCALA_VERSION} clean update package test:assembly
+sbt -Dspark.testVersion=$TEST_SPARK_VERSION ++${TRAVIS_SCALA_VERSION} update package test:assembly
 python-tests/lib/spark-${TEST_SPARK_VERSION}-bin-hadoop2.4/bin/spark-submit \
     --master local[*] \
     --driver-memory 512m \
