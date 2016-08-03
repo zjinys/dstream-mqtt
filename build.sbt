@@ -10,7 +10,7 @@ version := io.Source.fromFile("version.txt").mkString.trim
 
 spName := "org.spark-project/dstream-mqtt"
 
-sparkVersion in ThisBuild := "2.0.0-SNAPSHOT"
+sparkVersion in ThisBuild := "2.0.0"
 
 val testSparkVersion = settingKey[String]("The version of Spark to test against.")
 

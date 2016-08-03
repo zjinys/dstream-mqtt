@@ -17,46 +17,51 @@
 
 package org.apache.spark.streaming.mqtt
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.MqttCallback
-import org.eclipse.paho.client.mqttv3.MqttClient
-import org.eclipse.paho.client.mqttv3.MqttMessage
+import org.eclipse.paho.client.mqttv3._
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
-
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream._
 import org.apache.spark.streaming.receiver.Receiver
 
 /**
- * Input stream that subscribe messages from a Mqtt Broker.
- * Uses eclipse paho as MqttClient http://www.eclipse.org/paho/
- * @param brokerUrl Url of remote mqtt publisher
- * @param topic topic name to subscribe to
- * @param storageLevel RDD storage level.
- */
+  * Input stream that subscribe messages from a Mqtt Broker.
+  * Uses eclipse paho as MqttClient http://www.eclipse.org/paho/
+  *
+  * @param brokerUrl    Url of remote mqtt publisher
+  * @param topic        topic name to subscribe to
+  * @param storageLevel RDD storage level.
+  */
 
 private[streaming]
 class MQTTInputDStream(
-    _ssc: StreamingContext,
-    brokerUrl: String,
-    topic: String,
-    storageLevel: StorageLevel
-  ) extends ReceiverInputDStream[String](_ssc) {
+                        _ssc: StreamingContext,
+                        brokerUrl: String,
+                        topic: String,
+                        username: String,
+                        password: String,
+                        interval: Int,
+                        cleanSession: Boolean,
+                        storageLevel: StorageLevel
+                      ) extends ReceiverInputDStream[String](_ssc) {
 
   private[streaming] override def name: String = s"MQTT stream [$id]"
 
   def getReceiver(): Receiver[String] = {
-    new MQTTReceiver(brokerUrl, topic, storageLevel)
+    new MQTTReceiver(brokerUrl, topic, username, password, interval, cleanSession, storageLevel)
   }
 }
 
 private[streaming]
 class MQTTReceiver(
-    brokerUrl: String,
-    topic: String,
-    storageLevel: StorageLevel
-  ) extends Receiver[String](storageLevel) {
+                    brokerUrl: String,
+                    topic: String,
+                    username: String,
+                    password: String,
+                    interval: Int,
+                    cleanSession: Boolean,
+                    storageLevel: StorageLevel
+                  ) extends Receiver[String](storageLevel) {
 
   def onStop() {
 
@@ -64,6 +69,14 @@ class MQTTReceiver(
 
   def onStart() {
 
+    var connOpt = new MqttConnectOptions()
+
+    connOpt.setCleanSession(cleanSession)
+    connOpt.setKeepAliveInterval(interval)
+    if (username != null && password != null) {
+      connOpt.setUserName(username)
+      connOpt.setPassword(password.toCharArray)
+    }
     // Set up persistence for messages
     val persistence = new MemoryPersistence()
 
@@ -91,7 +104,7 @@ class MQTTReceiver(
     client.setCallback(callback)
 
     // Connect to MqttBroker
-    client.connect()
+    client.connect(connOpt)
 
     // Subscribe to Mqtt topic
     client.subscribe(topic)
