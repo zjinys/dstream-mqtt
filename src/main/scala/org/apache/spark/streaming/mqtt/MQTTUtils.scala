@@ -37,12 +37,18 @@ object MQTTUtils {
                     ssc: StreamingContext,
                     brokerUrl: String,
                     topic: String,
+                    username: String,
+                    password: String,
+                    interval: Int,
+                    cleanSession: Boolean,
                     storageLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK_SER_2
                   ): ReceiverInputDStream[String] = {
-    new MQTTInputDStream(ssc, brokerUrl, topic, null, null, 30, true, storageLevel)
+    new MQTTInputDStream(ssc, brokerUrl, topic, username, password,
+      interval, cleanSession, storageLevel)
   }
 
 
+  /*
   def createStreamAuth(
                     ssc: StreamingContext,
                     brokerUrl: String,
@@ -67,6 +73,7 @@ object MQTTUtils {
     new MQTTInputDStream(ssc, brokerUrl, topic,
           username, password, interval, cleanSession, storageLevel)
   }
+  */
 
   /**
     * Create an input stream that receives messages pushed by a MQTT publisher.
@@ -82,7 +89,8 @@ object MQTTUtils {
                     topic: String
                   ): JavaReceiverInputDStream[String] = {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    createStream(jssc.ssc, brokerUrl, topic)
+    createStream(jssc.ssc, brokerUrl, topic, null, null, 30, true,
+      StorageLevel.MEMORY_AND_DISK_SER_2)
   }
 
   /**
@@ -100,8 +108,24 @@ object MQTTUtils {
                     storageLevel: StorageLevel
                   ): JavaReceiverInputDStream[String] = {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    createStream(jssc.ssc, brokerUrl, topic, storageLevel)
+    createStream(jssc.ssc, brokerUrl, topic, null, null, 30, true, storageLevel)
   }
+
+
+  def createStream(
+                    jssc: JavaStreamingContext,
+                    brokerUrl: String,
+                    topic: String,
+                    username: String,
+                    password: String,
+                    storageLevel: StorageLevel
+                  ): JavaReceiverInputDStream[String] = {
+    implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    createStream(jssc.ssc, brokerUrl, topic, username, password, 30, true, storageLevel)
+  }
+
+
+
 }
 
 /**
